@@ -100,7 +100,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234\"\r\n}",
+					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234x\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -146,6 +146,41 @@
 					"path": [
 						"stashook",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login-Token-Validate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoiMTA1MDQiLCJwYXNzd29yZCI6IlRlc3RAMTIzNCIsImlhdCI6MTcyOTA5NDg4NX0.8YNSbN3cGNFoZxFd1jvqhPjZBiqmBkPiKQCn34S8amk",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/stashook/searchUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"stashook",
+						"searchUser"
 					]
 				}
 			},
