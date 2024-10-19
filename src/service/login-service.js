@@ -22,12 +22,21 @@ module.exports = {
                     if (match) {
 
                         Connection.query(Queries.UserRolesSelect, [results[0].employeeId], function (err, roleResults) {
-
+                            
                             UsersLogModel.create(UsersLogModel.createData(results));
-                            let accessToken = jsonWebToken.sign(createTokenData(results[0], roleResults), process.env.ACCESS_TOKEN);
-
+                            let roleData = getRolesInfo(roleResults);
+                            let accessToken = jsonWebToken.sign(createTokenData(results[0], roleData), process.env.ACCESS_TOKEN);
+                            
                             res.status(200).send({
                                 accesstoken: accessToken,
+                                user: {
+                                    userId: results[0].userId,
+                                    userName: results[0].userName,
+                                    producerName: results[0].producerName,
+                                    isAdmin: roleData.isAdmin,
+                                    roles: roleData.roles
+
+                                },
                                 message: Message.USER_LOGGED_IN_SUCCESSFULLY
                             });
                             res.end();
@@ -43,26 +52,30 @@ module.exports = {
     }
 }
 
-function createTokenData(user, roleResults) {
+function createTokenData(user, roleData) {
 
-    let isAdmin = false;
-    let roles = [] ;
-
-    roleResults.forEach(element => {
-        if(element.isAdmin && !isAdmin)
-            isAdmin = true;
-        roles.push(element.roleId)
-    });
-    
     return {
         employeeId: user.employeeId,
         userId: user.userId,
         userName: user.userName,
         producerId: user.producerId,
+        producerName: user.producerName,
         userType: user.userType,
-        roles: roles,
-        isAdmin: isAdmin
+        roles: roleData.roles,
+        isAdmin: roleData.isAdmin
     }
 }
 
+
+function getRolesInfo(roleResults) {
+    let isAdmin = false;
+    let roles = [];
+
+    roleResults.forEach(element => {
+        if (element.isAdmin && !isAdmin)
+            isAdmin = true;
+        roles.push(element.roleId);
+    });
+    return { roles, isAdmin };
+}
 

@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var loginRouter = require('./src/routes/login-router');
-var userRouter = require('./src/routes/user-router');
 
 var app = express();
 
@@ -22,7 +21,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 const CONTEXT_PATH = '/stashook';
 
 app.use(CONTEXT_PATH, loginRouter);
-app.use(CONTEXT_PATH, userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
