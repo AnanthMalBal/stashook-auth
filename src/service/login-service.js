@@ -22,11 +22,11 @@ module.exports = {
                     if (match) {
 
                         Connection.query(Queries.UserRolesSelect, [results[0].employeeId], function (err, roleResults) {
-                            
+
                             UsersLogModel.create(UsersLogModel.createData(results));
                             let roleData = getRolesInfo(roleResults);
-                            let accessToken = jsonWebToken.sign(createTokenData(results[0], roleData), process.env.ACCESS_TOKEN);
-                            
+                            let accessToken = jsonWebToken.sign(createTokenData(results[0], roleData), process.env.ACCESS_TOKEN, createSignInOptions());  //Eg: 60, "2 days", "10h", "7d"
+
                             res.status(200).send({
                                 accesstoken: accessToken,
                                 user: {
@@ -50,6 +50,11 @@ module.exports = {
             }
         });
     }
+}
+
+function createSignInOptions() {
+    //console.log(":::::process.env.ACCESS_TOKEN_EXPIRES_IN::::: " + process.env.ACCESS_TOKEN_EXPIRES_IN);
+    return { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN };
 }
 
 function createTokenData(user, roleData) {
