@@ -1,7 +1,6 @@
 const {Util} = require('stashook-utils');
 const Message = require('../util/message');
 const loginService = require('../service/login-service');
-const { error } = require('winston');
 
 module.exports = {
     authenticate: async function (req, res, next) {
@@ -12,7 +11,7 @@ module.exports = {
             }
             else {
 
-                Util.sendError401(res, Message.USER_LOGGED_IN_FAILED);
+                Util.sendError401(res, Message.USER_NOT_FOUND);
                 
             }
         }
