@@ -158,18 +158,13 @@
 				"header": [
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoiMTA1MDQiLCJwYXNzd29yZCI6IlRlc3RAMTIzNCIsImlhdCI6MTcyOTA5NDg4NX0.8YNSbN3cGNFoZxFd1jvqhPjZBiqmBkPiKQCn34S8amk",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoiMTA1MDciLCJwYXNzd29yZCI6IlRlc3RAMTIzNCIsImlhdCI6MTcyOTA5NTY2NX0.PntFLPIrMvEyDHY5ubfru_vPtVjj-5-_6gPM6LkZQ8I",
 						"type": "text"
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"mode": "urlencoded",
+					"urlencoded": []
 				},
 				"url": {
 					"raw": "http://localhost:9000/stashook/searchUser",
@@ -181,6 +176,35 @@
 					"path": [
 						"stashook",
 						"searchUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Menu List",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/stashook/menuList",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"stashook",
+						"menuList"
 					]
 				}
 			},
