@@ -10,7 +10,7 @@ module.exports = new class MenuModel extends Model {
 
     let searchData = [];
 
-    searchData.push(req.body.roleList.split(","));
+    searchData.push(req.body.roles.split(","));
 
     return searchData;
   }

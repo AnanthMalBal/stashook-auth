@@ -10,7 +10,7 @@ module.exports = {
 
         Logger.info("Menu List Query ::: " + Queries.MenuSelect);
 
-        if (req.body.roleList && req.body.roleList.length > 0) {
+        if (req.body.roles && req.body.roles.length > 0) {
 
             Connection.query(Queries.MenuSelect, MenuModel.searchData(req), function (error, results) {
                 if (error) res.json("[]");
