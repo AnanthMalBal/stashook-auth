@@ -6,4 +6,6 @@ module.exports = {
     USER_LOGGED_IN_FAILED: 'Invalid Credentials. Please provide valid Username and Password.',
     USER_LEAVE_CANCELLED_SUCCESSFULLY: 'User Leave has been cancelled successfully.',
     USER_LEAVE_CANCELLATION_FAILED: 'Unable to Cancel User Leave. Attempt Failed!',
+    USER_PASSWORD_CHANGED_SUCCESSFULLY: 'Password Has Been Changed Successfully.',
+    USER_PASSWORD_CHANGE_FAILED: 'Unable To Change Password.',
 }
