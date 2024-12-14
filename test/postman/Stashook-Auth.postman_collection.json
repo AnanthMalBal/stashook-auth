@@ -14,7 +14,8 @@
 					"script": {
 						"exec": [
 							"pm.environment.set(\"token\", pm.response.json().accesstoken);\r",
-							"//console.log(pm.environment.get(\"token\"));"
+							"//console.log(pm.environment.get(\"token\"));\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -36,7 +37,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234\"\r\n}",
+					"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -44,10 +45,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9000/stashook/login",
+					"raw": "http://122.165.69.144:9000/stashook/login",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"122",
+						"165",
+						"69",
+						"144"
 					],
 					"port": "9000",
 					"path": [
@@ -78,7 +82,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"mgandeeban@stashook.com\",\r\n    \"password\":\"Test@1234\"\r\n}",
+					"raw": "{\r\n    \"username\": \"{{emailId}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -120,7 +124,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"9790756096\",\r\n    \"password\":\"Test@1234\"\r\n}",
+					"raw": "{\r\n    \"username\": \"{{mobileNo}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -149,7 +153,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"10504\",\r\n    \"password\":\"Test@1234x\"\r\n}",
+					"raw": "{\r\n    \"username\":\"15006\",\r\n    \"password\":\"Test@1234x\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -231,7 +235,151 @@
 			"response": []
 		},
 		{
+			"name": "Forgot-Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.response.json().passwordtoken);\r",
+							"pm.environment.set(\"passwordtoken\", pm.response.json().passwordtoken);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"emailId\": \"{{emailId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/stashook/forgotPassword",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"stashook",
+						"forgotPassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change-Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{passwordtoken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\": \"{{password}}\",\r\n    \"otp\": \"XRX-110406\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/stashook/changePassword",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"stashook",
+						"changePassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Menu List",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const preRequest = {\r",
+							"    method: 'POST',\r",
+							"    url: pm.environment.get(\"auth-url\"),\r",
+							"    header: 'Content-Type: application/json',\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            \"username\":pm.environment.get(\"username\"),\r",
+							"            \"password\":pm.environment.get(\"password\")\r",
+							"        })\r",
+							"    }\r",
+							"};\r",
+							" \r",
+							"// Send the pre-request POST request.\r",
+							"pm.sendRequest(preRequest, (err, response) => {\r",
+							"    if (err) {\r",
+							"        console.error('Error:', err);\r",
+							"    } else {\r",
+							"        //console.log('Pre-request script response:', response.json());\r",
+							"        pm.environment.set(\"token\", response.json().accesstoken);\r",
+							"        //console.log(pm.environment.get(\"accessToken\"));\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [

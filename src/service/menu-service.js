@@ -1,6 +1,5 @@
 const { Connection } = require('stashook-utils');
 const Queries = require('../util/queries');
-const Message = require('../util/message');
 const Logger = require('../util/logger');
 const MenuModel = require('../model/menu');
 

@@ -19,7 +19,7 @@ module.exports = {
     forgotPassword: async function (req, res, next) {
         try {
 
-            passwordService.changePassword(req, res, next);
+            passwordService.forgotPassword(req, res, next);
         }
         catch (excep) {
             console.log("Forgot Password excep ::: " + excep);

@@ -1,6 +1,8 @@
 module.exports = {
 
-    LoginAuthenticate : `SELECT U.employeeId, U.userId, U.userName, U.userPwd, U.producerId, U.userType, P.producerName FROM users U 
+    LoginAuthenticate : `SELECT U.employeeId, U.userId, CONCAT(U.userName, ' (', U.userId,')') AS userName, CONCAT(U1.userName, ' (', U1.userId,')') AS leadBy,
+    UM.emailId, U.userPwd, U.producerId, U.userType, P.producerName, U1.reportingTo FROM users U 
+    LEFT JOIN users U1 ON U1.employeeId = U.reportingTo 
     LEFT JOIN usersmedia UM ON U.employeeId = UM.employeeId 
     LEFT JOIN producers P ON P.producerId = U.producerId 
     WHERE U.status = 1 AND (U.userId = ? OR UM.emailId = ? OR UM.mobileNo = ?)`,
@@ -10,5 +12,6 @@ module.exports = {
 
     MenuSelect: `SELECT M.* FROM menu M LEFT JOIN menurole MR ON MR.menuId = M.menuId WHERE MR.roleId IN (?) Order By M.level ASC`,
 
-    ChangePassword: `UPDATE users SET userPwd = ?, userPwdModDate = ? WHERE userStatus = 'Activated' AND employeeId = ?`
+    ChangePassword: `UPDATE users SET userPwd = ?, userPwdModDate = ? WHERE userStatus = 'Activated' AND employeeId = ?`,
+
 }

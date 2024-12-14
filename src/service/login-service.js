@@ -5,6 +5,7 @@ const Queries = require('../util/queries');
 const Message = require('../util/message');
 const Logger = require('../util/logger');
 const UsersLogModel = require('../model/userslog');
+const { error } = require('winston');
 
 module.exports = {
     generateAccessToken: async function (req, res, next) {
@@ -15,7 +16,7 @@ module.exports = {
         const password = req.body.password;
 
         Connection.query(Queries.LoginAuthenticate, [loginId, loginId, loginId], function (err, results) {
-
+            
             if (err === null && results[0] !== undefined) {
                 bcryptjs.compare(password, results[0].userPwd).then(match => {
 
@@ -32,6 +33,8 @@ module.exports = {
                                 user: {
                                     userId: results[0].userId,
                                     userName: results[0].userName,
+                                    emailId: results[0].emailId,
+                                    leadBy: results[0].leadBy,
                                     producerName: results[0].producerName,
                                     isAdmin: roleData.isAdmin,
                                     roles: roleData.roles
@@ -63,9 +66,11 @@ function createTokenData(user, roleData) {
         employeeId: user.employeeId,
         userId: user.userId,
         userName: user.userName,
+        emailId: user.emailId,
         producerId: user.producerId,
         producerName: user.producerName,
         userType: user.userType,
+        reportingTo: user.reportingTo,
         roles: roleData.roles,
         isAdmin: roleData.isAdmin
     }
