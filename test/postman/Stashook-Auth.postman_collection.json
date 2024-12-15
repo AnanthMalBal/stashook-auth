@@ -241,7 +241,6 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"console.log(pm.response.json().passwordtoken);\r",
 							"pm.environment.set(\"passwordtoken\", pm.response.json().passwordtoken);\r",
 							""
 						],

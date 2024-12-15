@@ -31,12 +31,14 @@ module.exports = {
             bcryptjs.genSalt(10, function (error, Salt) {
                 bcryptjs.hash(req.body.password, Salt, function (hashError, hashedPassword) {
 
-                    if (hashError)
+                    if (hashError){
                         Logger.error("ChangePassword:::hashError::: " + hashError);
+                        res.json(Message.UNABLE_TO_CHANGE_USER_PASSWORD);
+                    }
                     else {
                         Logger.info("ChangePassword:::hashedPassword::: " + hashedPassword);
                         Connection.query(Queries.ChangePassword, UsersModel.updateData(req, hashedPassword), function (error, results) {
-                            if (error || !results || results.affectedRows === 0) res.json(Message.USER_PASSWORD_FAILED);
+                            if (error || !results || results.affectedRows === 0) res.json(Message.UNABLE_TO_CHANGE_USER_PASSWORD);
                             else res.json(Message.USER_PASSWORD_CHANGED_SUCCESSFULLY);
                         });
                     }
@@ -44,7 +46,7 @@ module.exports = {
             });
         }
         else {
-            res.json(Message.USER_PASSWORD_CHANGE_FAILED);
+            res.json(Message.UNABLE_TO_CHANGE_INVALID_EXPIRE_OTP);
         }
 
     },
@@ -62,24 +64,33 @@ module.exports = {
 
                 let otpPasswordToken = createPasswordToken(results[0]);
 
-                transporter.sendMail(mailOptions(otpPasswordToken[0]), function (error, info) {
+                Connection.query(Queries.MessageTemplate, ['Email', 'User_Change_Password'], function (templateError, templateResults) {
 
-                    if (error) {
-                        res.json(Message.USER_PASSWORD_UNABLE_SEND_EMAIL);
-                    } else {
-                        let passwordToken = jsonWebToken.sign(otpPasswordToken[0], process.env.ACCESS_TOKEN, createSignInOptions());  //Eg: 60, "2 days", "10h", "7d"
+                    if(templateError)
+                        Util.sendError401(res, Message.USER_PASSWORD_UNABLE_SEND_EMAIL);
+                    if (templateResults && templateResults.length > 0) {
 
-                        res.status(200).send({
-                            passwordtoken: passwordToken,
-                            firstPart: otpPasswordToken[1],
-                            message: Message.USER_PASSWORD_TOKEN_SEND_TO_EMAIL_ID
+                        transporter.sendMail(mailOptions(otpPasswordToken[0], templateResults[0]), function (error, info) {
+
+                            if (error) {
+                                res.json(Message.USER_PASSWORD_UNABLE_SEND_EMAIL);
+                            } else {
+                                let passwordToken = jsonWebToken.sign(otpPasswordToken[0], process.env.ACCESS_TOKEN, createSignInOptions());  //Eg: 60, "2 days", "10h", "7d"
+
+                                res.status(200).send({
+                                    passwordtoken: passwordToken,
+                                    firstPart: otpPasswordToken[1],
+                                    expiresInMinutes: millisToMinutesAndSeconds(process.env.PASSWORD_TOKEN_EXPIRES_IN),
+                                    message: Message.USER_PASSWORD_TOKEN_SEND_TO_EMAIL_ID
+                                });
+                                res.end();
+                            }
                         });
-                        res.end();
                     }
                 });
             }
             else {
-                Util.sendError401(res, Message.USER_PASSWORD_GENERATION_FAILED);
+                Util.sendError401(res, Message.USER_PASSWORD_INVALID_USER);
             }
         });
     },
@@ -87,14 +98,22 @@ module.exports = {
 }
 
 function validateOTP(req) {
-    let tokenTime = moment(req.sessionUser.createdTime, "YYYY-MM-DD HH:mm:ss");
-    let currentTime = moment(Date.now()).add(90000, 'seconds').format("YYYY-MM-DD HH:mm:ss");
-    //let currentTime = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss") ;
-    currentTime = moment(currentTime, "YYYY-MM-DD HH:mm:ss");
 
-    let difference = currentTime.diff(tokenTime, 'seconds');
+    if (req.body.otp === undefined && req.sessionUser.otp === undefined) { //With Logged In Change Password
+        return true;
+    }
+    else if (req.body.otp && req.sessionUser.otp) 
+    {
+        let tokenTime = moment(req.sessionUser.createdTime, "YYYY-MM-DD HH:mm:ss");
+        let currentTime = moment(Date.now()).add(90000, 'seconds').format("YYYY-MM-DD HH:mm:ss");
+        currentTime = moment(currentTime, "YYYY-MM-DD HH:mm:ss");
 
-    return (req.body.otp === req.sessionUser.otp && difference < process.env.PASSWORD_TOKEN_EXPIRES_IN);
+        let difference = currentTime.diff(tokenTime, 'seconds');
+
+        return (req.body.otp === req.sessionUser.otp && difference < process.env.PASSWORD_TOKEN_EXPIRES_IN);
+    }
+    else
+        return false;
 }
 
 function createSignInOptions() {
@@ -118,14 +137,17 @@ function createPasswordToken(user) {
 }
 
 
-function mailOptions(user) {
-    let expiresIn = millisToMinutesAndSeconds(process.env.PASSWORD_TOKEN_EXPIRES_IN);
+function mailOptions(user, template) {
+    let finalMap = {};
+    finalMap["expiresIn"] = millisToMinutesAndSeconds(process.env.PASSWORD_TOKEN_EXPIRES_IN);
+
+    renderHTML(finalMap, user, template);
+
     return {
-        from: `"${process.env.ADMIN_EMAIL_DISPLAY_NAME}" <${process.env.ADMIN_EMAIL_ID}>` ,
+        from: `"${process.env.ADMIN_EMAIL_DISPLAY_NAME}" <${process.env.ADMIN_EMAIL_ID}>`,
         to: user.emailId,
-        subject: `${process.env.APPLICATION} Application Password Reset Email OTP Code`,
-        html: `<HTML><BODY><BR>Hi ${user.userName},<BR><BR>Your Password Change Activation Code Is <B>${user.otp}</B>. 
-        <BR>Your Activation Code Will Expire In ${expiresIn} minutes.<BR><BR>Thanks,<BR>Administrator.</BODY></HTML>`
+        subject: template.subject,
+        html: template.message
     };
 }
 
@@ -133,4 +155,30 @@ function millisToMinutesAndSeconds(millis) {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+}
+
+function renderHTML(finalMap, user, template) {
+
+    templateMapGenerator(user, finalMap, 'user');
+
+    for (let [key, value] of Object.entries(finalMap)) {
+        let source = '{{' + key + '}}';
+        template.message = template.message.replace(source, value);
+    }
+
+}
+
+function templateMapGenerator(dataMap, finalMap, uKey = '') {
+    let pKey = uKey;
+    for (let [key, value] of Object.entries(dataMap)) {
+        pKey = (pKey == '') ? key : pKey + '.' + key;
+
+        if (value instanceof Object && !Array.isArray(value)) {
+            templateMapGenerator(value, finalMap, pKey);
+        }
+        else {
+            finalMap[pKey] = value;
+            pKey = uKey;
+        }
+    }
 }

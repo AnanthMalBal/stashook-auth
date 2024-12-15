@@ -14,4 +14,6 @@ module.exports = {
 
     ChangePassword: `UPDATE users SET userPwd = ?, userPwdModDate = ? WHERE userStatus = 'Activated' AND employeeId = ?`,
 
+    MessageTemplate: `SELECT * FROM messages WHERE status = 1 AND media = ? AND messageId = ? `,
+
 }
