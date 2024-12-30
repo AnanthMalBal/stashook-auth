@@ -1,6 +1,7 @@
-const {Util} = require('stashook-utils');
+const { Util } = require('stashook-utils');
 const Message = require('../util/message');
 const loginService = require('../service/login-service');
+const userService = require('../service/user-service');
 
 module.exports = {
     authenticate: async function (req, res, next) {
@@ -14,10 +15,18 @@ module.exports = {
             }
         }
         catch (excep) {
-            console.log("Authenitcate excep ::: " + excep);
             Util.sendError500(req, res, excep);
         }
     },
 
-   
+    getUser: async function (req, res, next) {
+        try {
+            userService.getUser(req, res, next);
+        }
+        catch (excep) {
+            Util.sendError500(req, res, excep);
+        }
+    },
+
+
 }

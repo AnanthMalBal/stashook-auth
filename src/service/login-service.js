@@ -29,7 +29,9 @@ module.exports = {
                             let accessToken = jsonWebToken.sign(createTokenData(results[0], roleData), process.env.ACCESS_TOKEN, createSignInOptions());  //Eg: 60, "2 days", "10h", "7d"
 
                             res.status(200).send({
-                                accesstoken: accessToken,
+                                authToken: accessToken,
+                                refreshToken: accessToken,
+                                expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
                                 user: {
                                     userId: results[0].userId,
                                     userName: results[0].userName,
@@ -38,7 +40,6 @@ module.exports = {
                                     producerName: results[0].producerName,
                                     isAdmin: roleData.isAdmin,
                                     roles: roleData.roles
-
                                 },
                                 message: Message.USER_LOGGED_IN_SUCCESSFULLY
                             });
