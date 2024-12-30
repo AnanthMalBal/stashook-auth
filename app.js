@@ -31,17 +31,14 @@ app.use(function(req, res, next) {
 
 const cors = require('cors');
 const allowedOrigins = ['http://localhost:3007' ,'http://localhost:4200','http://localhost:9000','http://192.168.31.45:9000'];
+// const origin = (whitelist.indexOf(req.header('Origin')) !== -1); // Newly Added
+// const options=cors.CorsOptions= {  origin: origin}; // Newly Added
 const options=cors.CorsOptions= {  origin: allowedOrigins};
 app.use(cors(allowedOrigins));
 app.use(cors(options));
 app.use(cors({
   origin: '*'
-  
 }));
-
-
-
-
 
 
 // error handler

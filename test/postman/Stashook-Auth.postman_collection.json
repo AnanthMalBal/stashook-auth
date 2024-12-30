@@ -13,8 +13,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"token\", pm.response.json().accesstoken);\r",
-							"//console.log(pm.environment.get(\"token\"));\r",
+							"pm.environment.set(\"token\", pm.response.json().authToken);\r",
+							"//console.log(pm.environment.get(\"authToken\"));\r",
 							""
 						],
 						"type": "text/javascript",
@@ -45,13 +45,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://122.165.69.144:9000/stashook/login",
+					"raw": "http://localhost:9000/stashook/login",
 					"protocol": "http",
 					"host": [
-						"122",
-						"165",
-						"69",
-						"144"
+						"localhost"
 					],
 					"port": "9000",
 					"path": [
@@ -69,7 +66,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"token\", pm.response.json().accesstoken);\r",
+							"pm.environment.set(\"token\", pm.response.json().authToken);\r",
 							"//console.log(pm.environment.get(\"token\"));"
 						],
 						"type": "text/javascript",
@@ -111,7 +108,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"token\", pm.response.json().accesstoken);\r",
+							"pm.environment.set(\"token\", pm.response.json().authToken);\r",
 							"//console.log(pm.environment.get(\"token\"));"
 						],
 						"type": "text/javascript",
@@ -264,7 +261,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"emailId\": \"{{emailId}}\"\r\n}",
+					"raw": "{\r\n    \"emailId\": \"anandb.hbs@gmail.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -321,7 +318,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"password\": \"{{password}}\",\r\n    \"otp\": \"XRX-110406\"\r\n}",
+					"raw": "{\r\n    \"password\": \"{{password}}\",\r\n    \"otp\": \"FEB-411002\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -407,6 +404,82 @@
 					"path": [
 						"stashook",
 						"menuList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const preRequest = {\r",
+							"    method: 'POST',\r",
+							"    url: pm.environment.get(\"auth-url\"),\r",
+							"    header: 'Content-Type: application/json',\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            \"username\":pm.environment.get(\"username\"),\r",
+							"            \"password\":pm.environment.get(\"password\")\r",
+							"        })\r",
+							"    }\r",
+							"};\r",
+							" \r",
+							"// Send the pre-request POST request.\r",
+							"pm.sendRequest(preRequest, (err, response) => {\r",
+							"    if (err) {\r",
+							"        console.error('Error:', err);\r",
+							"    } else {\r",
+							"        //console.log('Pre-request script response:', response.json());\r",
+							"        pm.environment.set(\"token\", response.json().authToken);\r",
+							"        //console.log(pm.environment.get(\"authToken\"));\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9000/stashook/getUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"stashook",
+						"getUser"
 					]
 				}
 			},
