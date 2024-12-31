@@ -1,6 +1,4 @@
 const { Util } = require('stashook-utils');
-const Message = require('../util/message');
-const loginService = require('../service/login-service');
 const passwordService = require('../service/password-service');
 
 module.exports = {
@@ -11,7 +9,6 @@ module.exports = {
             passwordService.changePassword(req, res, next);
         }
         catch (excep) {
-            console.log("Change Password excep ::: " + excep);
             Util.sendError500(req, res, excep);
         }
     },
@@ -22,7 +19,6 @@ module.exports = {
             passwordService.forgotPassword(req, res, next);
         }
         catch (excep) {
-            console.log("Forgot Password excep ::: " + excep);
             Util.sendError500(req, res, excep);
         }
     },

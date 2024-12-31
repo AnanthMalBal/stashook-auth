@@ -1,11 +1,9 @@
 const jsonWebToken = require('jsonwebtoken');
-const { Util, Connection } = require('stashook-utils');
+const { Util, Connection, Logger} = require('stashook-utils');
 const bcryptjs = require('bcryptjs');
 const Queries = require('../util/queries');
 const Message = require('../util/message');
-const Logger = require('../util/logger');
 const UsersLogModel = require('../model/userslog');
-const { error } = require('winston');
 
 module.exports = {
     generateAccessToken: async function (req, res, next) {

@@ -1,7 +1,5 @@
-const { Util, Connection } = require('stashook-utils');
+const { Connection, Logger} = require('stashook-utils');
 const Queries = require('../util/queries');
-const Logger = require('../util/logger');
-const { error } = require('winston');
 
 module.exports = {
     getUser: async function (req, res, next) {

@@ -7,7 +7,6 @@ module.exports = {
             menuService.getMenuList(req, res, next);
         }
         catch (excep) {
-            console.log("getMenuList excep ::: " + excep);
             Util.sendError500(req, res, excep);
         }
     },
