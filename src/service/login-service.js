@@ -1,5 +1,5 @@
 const jsonWebToken = require('jsonwebtoken');
-const { Util, Connection, Logger} = require('stashook-utils');
+const { Util, Connection, Logger } = require('stashook-utils');
 const bcryptjs = require('bcryptjs');
 const Queries = require('../util/queries');
 const Message = require('../util/message');
@@ -14,7 +14,7 @@ module.exports = {
         const password = req.body.password;
 
         Connection.query(Queries.LoginAuthenticate, [loginId, loginId, loginId], function (err, results) {
-            
+
             if (err === null && results[0] !== undefined) {
                 bcryptjs.compare(password, results[0].userPwd).then(match => {
 
@@ -79,12 +79,13 @@ function createTokenData(user, roleData) {
 function getRolesInfo(roleResults) {
     let isAdmin = false;
     let roles = [];
-
-    roleResults.forEach(element => {
-        if (element.isAdmin && !isAdmin)
-            isAdmin = true;
-        roles.push(element.roleId);
-    });
+    if (roleResults) {
+        roleResults.forEach(element => {
+            if (element.isAdmin && !isAdmin)
+                isAdmin = true;
+            roles.push(element.roleId);
+        });
+    }
     return { roles, isAdmin };
 }
 

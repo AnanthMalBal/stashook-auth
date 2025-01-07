@@ -5,7 +5,6 @@ const MenuModel = require('../model/menu');
 module.exports = {
     getMenuList: async function (req, res, next) {
 
-        Logger.info("Menu List Query ::: " + Queries.MenuSelect);
 
         if (req.body.roles && req.body.roles.length > 0) {
 
