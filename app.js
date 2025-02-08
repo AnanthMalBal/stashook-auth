@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const CONTEXT_PATH = '/stashook';
+const CONTEXT_PATH = '/testifly';
 
 app.use(CONTEXT_PATH, loginRouter);
 
